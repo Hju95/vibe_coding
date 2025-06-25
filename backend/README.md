@@ -1,7 +1,9 @@
-# TASK-003: LangGraph Agent 구현 완료
+# Vibe Coding - AI Agent 상품 검색 서비스
 
 ## 개요
-LangGraph를 사용한 React Agent 구현이 완료되었습니다. 이 Agent는 DuckDuckGo 검색을 통해 상품 정보를 찾고, Gemini LLM을 사용하여 사용자에게 유용한 정보를 제공합니다.
+LangGraph를 사용한 React Agent 기반의 상품 검색 서비스입니다. DuckDuckGo 검색을 통해 상품 정보를 찾고, Gemini LLM을 사용하여 사용자에게 유용한 정보를 제공합니다.
+
+> 🚀 **최신 업데이트**: GitHub Actions 자동화 워크플로우 추가 및 프로젝트 구조 개선
 
 ## 구현된 기능
 
