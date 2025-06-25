@@ -26,7 +26,7 @@ jobs:
           
           // 팀원 목록 및 전문 분야 (프로젝트에 맞게 수정 필요)
           const teamMembers = {
-            'jugwang': ['backend', 'api', 'database'], // 실제 GitHub 사용자명으로 변경
+            'Hju95': ['backend', 'api', 'database'], // 실제 GitHub 사용자명으로 변경
             // 'frontend-dev': ['frontend', 'ui', 'streamlit'],
             // 'devops-engineer': ['deployment', 'ci', 'docker']
           };

@@ -24,7 +24,7 @@ jobs:
           const author = pr.data.user.login;
           
           // 기본 리뷰어 목록 (프로젝트에 맞게 수정 필요)
-          const defaultReviewers = ['jugwang']; // 실제 GitHub 사용자명으로 변경
+          const defaultReviewers = ['Hju95']; // 실제 GitHub 사용자명으로 변경
           
           // 작성자를 제외한 리뷰어 선택
           const reviewers = defaultReviewers.filter(reviewer => reviewer !== author);
