@@ -1,0 +1,59 @@
+name: PR Auto Assign
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Auto Assign PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          const pr = await github.rest.pulls.get({
+            owner,
+            repo,
+            pull_number: number,
+          });
+          
+          // PR 작성자
+          const author = pr.data.user.login;
+          
+          // 기본 리뷰어 목록 (프로젝트에 맞게 수정 필요)
+          const defaultReviewers = ['jugwang']; // 실제 GitHub 사용자명으로 변경
+          
+          // 작성자를 제외한 리뷰어 선택
+          const reviewers = defaultReviewers.filter(reviewer => reviewer !== author);
+          
+          if (reviewers.length > 0) {
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner,
+                repo,
+                pull_number: number,
+                reviewers: reviewers.slice(0, 2) // 최대 2명까지 할당
+              });
+              
+              console.log(`리뷰어 할당 완료: ${reviewers.join(', ')}`);
+            } catch (error) {
+              console.log('리뷰어 할당 중 오류 발생:', error.message);
+            }
+          }
+          
+          // PR 작성자를 Assignee로 설정
+          try {
+            await github.rest.issues.addAssignees({
+              owner,
+              repo,
+              issue_number: number,
+              assignees: [author]
+            });
+            
+            console.log(`Assignee 설정 완료: ${author}`);
+          } catch (error) {
+            console.log('Assignee 설정 중 오류 발생:', error.message);
+          } 

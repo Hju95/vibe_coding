@@ -1,0 +1,84 @@
+name: ❓ Question
+description: 질문이나 도움이 필요하신가요?
+title: "[Question] "
+labels: ["question", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        감사합니다! 질문해주셔서 고맙습니다.
+        명확한 답변을 위해 가능한 한 구체적으로 작성해주세요.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: ❓ 질문 내용
+      description: 질문하고 싶은 내용을 명확하게 작성해주세요.
+      placeholder: 예) FastAPI에서 Streamlit 프론트엔드와 연동하는 방법을 알고 싶습니다.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 📂 질문 카테고리
+      description: 어떤 분야의 질문인가요?
+      options:
+        - 설치/설정
+        - 사용법
+        - 개발 가이드
+        - 에러 해결
+        - 성능 최적화
+        - 배포
+        - 기타
+      default: 1
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: 🔍 시도해본 방법
+      description: 문제 해결을 위해 어떤 시도를 해보셨나요?
+      placeholder: |
+        - 문서 확인
+        - 구글 검색
+        - 코드 수정 시도
+        - 기타
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 🎯 기대하는 답변
+      description: 어떤 정보나 도움을 원하시나요?
+      placeholder: 예) 구체적인 코드 예제, 설정 방법, 문제 해결 가이드
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 🔧 관련 코드/설정
+      description: 관련된 코드나 설정이 있다면 공유해주세요.
+      render: python
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 💻 환경 정보
+      description: 관련된 환경 정보를 알려주세요.
+      placeholder: |
+        - OS:
+        - Python 버전:
+        - 관련 패키지 버전:
+
+  - type: textarea
+    id: documentation
+    attributes:
+      label: 📚 확인한 문서
+      description: 이미 확인해본 문서나 자료가 있나요?
+      placeholder: 예) README.md, API 문서, 관련 이슈
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📋 추가 정보
+      description: 질문과 관련된 추가 정보가 있다면 작성해주세요. 

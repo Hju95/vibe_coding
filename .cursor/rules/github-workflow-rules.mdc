@@ -1,0 +1,127 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# GitHub 워크플로우 및 PR/이슈 관리 룰
+
+## PR (Pull Request) 관리 룰
+
+### PR 생성 시 필수 사항
+1. **명확한 제목**: 변경 사항을 간결하게 설명
+   - 예: `feat: add user authentication API`
+   - 예: `fix: resolve memory leak in agent service`
+   - 예: `docs: update API documentation`
+
+2. **상세한 설명**: PR 템플릿에 따라 작성
+   - 변경 사항 요약
+   - 테스트 방법
+   - 스크린샷 (UI 변경 시)
+   - Breaking changes 여부
+
+3. **연관 이슈 링크**: `Closes #123` 또는 `Fixes #456` 형태로 명시
+
+### PR 리뷰 프로세스
+1. **자동 체크 통과**: 모든 CI/CD 체크가 성공해야 함
+2. **코드 리뷰 완료**: 최소 1명의 승인 필요
+3. **테스트 커버리지**: 새로운 코드에 대한 테스트 필수
+4. **문서 업데이트**: API 변경 시 문서 동기화
+
+### PR 라벨 시스템
+- **크기**: `size/XS`, `size/S`, `size/M`, `size/L`, `size/XL`
+- **영역**: `backend`, `frontend`, `tests`, `documentation`, `configuration`
+- **타입**: `bug`, `enhancement`, `refactoring`, `hotfix`
+
+## 이슈 (Issue) 관리 룰
+
+### 이슈 분류
+1. **버그 리포트** (`bug`)
+   - 재현 방법 상세 기술
+   - 환경 정보 포함
+   - 예상 결과 vs 실제 결과
+
+2. **기능 요청** (`enhancement`)
+   - 사용 사례 설명
+   - 기대 효과 명시
+   - 우선순위 표시
+
+3. **질문** (`question`)
+   - 구체적인 질문 내용
+   - 시도한 방법들
+   - 참고한 문서
+
+### 이슈 라벨 시스템
+- **타입**: `bug`, `enhancement`, `question`, `documentation`
+- **영역**: `backend`, `frontend`, `testing`, `configuration`, `performance`, `security`
+- **우선순위**: `priority: high`, `priority: medium`, `priority: low`
+- **난이도**: `difficulty: easy`, `difficulty: medium`, `difficulty: hard`
+- **크기**: `size: small`, `size: medium`, `size: large`
+
+### 할당 규칙
+- **Backend 관련**: API, 데이터베이스, 서버 로직
+- **Frontend 관련**: UI, Streamlit, 사용자 인터페이스
+- **DevOps 관련**: 배포, CI/CD, 인프라
+
+## 자동화 워크플로우
+
+### 테스트 자동화
+- **트리거**: Push to main, PR 생성/업데이트
+- **범위**: Backend 및 Frontend 테스트
+- **커버리지**: 최소 80% 유지
+
+### PR 자동 처리
+1. **자동 댓글**: PR 생성 시 분석 결과 제공
+2. **자동 할당**: 리뷰어 및 Assignee 자동 설정
+3. **자동 라벨링**: 파일 변경사항 기반 라벨 추가
+4. **자동 코드 리뷰**: 기본적인 코드 품질 체크
+
+### 이슈 자동 처리
+1. **웰컴 댓글**: 이슈 생성 시 가이드 제공
+2. **자동 할당**: 키워드 기반 담당자 할당
+3. **자동 라벨링**: 제목/내용 기반 분류
+
+## 브랜치 전략
+
+### 브랜치 명명 규칙
+- `feature/기능명`: 새로운 기능 개발
+- `bugfix/버그명`: 버그 수정
+- `hotfix/긴급수정명`: 운영 환경 긴급 수정
+- `docs/문서명`: 문서 업데이트
+
+### 보호된 브랜치
+- **main**: 직접 push 금지, PR을 통해서만 병합
+- **필수 체크**: 테스트 통과, 코드 리뷰 승인
+
+## 커밋 메시지 규칙
+
+### 커밋 메시지 형식
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### 타입 분류
+- `feat`: 새로운 기능
+- `fix`: 버그 수정
+- `docs`: 문서 변경
+- `style`: 코드 스타일 변경
+- `refactor`: 코드 리팩토링
+- `test`: 테스트 추가/수정
+- `chore`: 빌드/설정 변경
+
+## 릴리즈 관리
+
+### 버전 관리
+- **Semantic Versioning**: MAJOR.MINOR.PATCH
+- **태그**: `v1.0.0` 형태로 태그 생성
+- **릴리즈 노트**: 주요 변경사항 정리
+
+### 배포 전 체크리스트
+- [ ] 모든 테스트 통과
+- [ ] 코드 리뷰 완료
+- [ ] 문서 업데이트
+- [ ] Breaking changes 확인
+- [ ] 마이그레이션 스크립트 (필요시)

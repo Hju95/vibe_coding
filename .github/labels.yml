@@ -1,0 +1,141 @@
+# GitHub 라벨 설정
+# 이 파일은 github-labeler action과 함께 사용됩니다
+
+# 타입 라벨
+- name: "bug"
+  color: "d73a4a"
+  description: "버그나 오류와 관련된 이슈"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "새로운 기능이나 개선사항"
+
+- name: "question"
+  color: "d876e3"
+  description: "질문이나 도움 요청"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "문서 관련 작업"
+
+- name: "refactoring"
+  color: "fbca04"
+  description: "코드 리팩토링"
+
+- name: "hotfix"
+  color: "b60205"
+  description: "긴급 수정"
+
+- name: "triage"
+  color: "ededed"
+  description: "검토가 필요한 이슈"
+
+# 영역 라벨
+- name: "backend"
+  color: "1d76db"
+  description: "Backend/API 관련"
+
+- name: "frontend"
+  color: "0e8a16"
+  description: "Frontend/UI 관련"
+
+- name: "tests"
+  color: "f9d0c4"
+  description: "테스트 관련"
+
+- name: "configuration"
+  color: "d4c5f9"
+  description: "설정 및 환경 관련"
+
+- name: "testing"
+  color: "c2e0c6"
+  description: "테스트 프레임워크 관련"
+
+- name: "performance"
+  color: "ff6347"
+  description: "성능 최적화"
+
+- name: "security"
+  color: "8b0000"
+  description: "보안 관련"
+
+# 크기 라벨
+- name: "size/XS"
+  color: "3cbf00"
+  description: "매우 작은 변경사항 (< 10 라인)"
+
+- name: "size/S"
+  color: "5d9801"
+  description: "작은 변경사항 (10-30 라인)"
+
+- name: "size/M"
+  color: "7f8c02"
+  description: "중간 변경사항 (30-100 라인)"
+
+- name: "size/L"
+  color: "a17f03"
+  description: "큰 변경사항 (100-500 라인)"
+
+- name: "size/XL"
+  color: "c27204"
+  description: "매우 큰 변경사항 (> 500 라인)"
+
+# 우선순위 라벨
+- name: "priority: high"
+  color: "d73a4a"
+  description: "높은 우선순위"
+
+- name: "priority: medium"
+  color: "fbca04"
+  description: "보통 우선순위"
+
+- name: "priority: low"
+  color: "0e8a16"
+  description: "낮은 우선순위"
+
+# 난이도 라벨
+- name: "difficulty: easy"
+  color: "c2e0c6"
+  description: "쉬운 작업"
+
+- name: "difficulty: medium"
+  color: "f9d0c4"
+  description: "보통 난이도"
+
+- name: "difficulty: hard"
+  color: "d73a4a"
+  description: "어려운 작업"
+
+# 크기 추정 라벨
+- name: "size: small"
+  color: "c2e0c6"
+  description: "작은 작업 (1-2일)"
+
+- name: "size: medium"
+  color: "f9d0c4"
+  description: "중간 작업 (3-5일)"
+
+- name: "size: large"
+  color: "d73a4a"
+  description: "큰 작업 (1주 이상)"
+
+# 상태 라벨
+- name: "good first issue"
+  color: "7057ff"
+  description: "처음 기여하기 좋은 이슈"
+
+- name: "help wanted"
+  color: "008672"
+  description: "도움이 필요한 이슈"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "수정하지 않을 이슈"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "중복된 이슈"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "유효하지 않은 이슈" 

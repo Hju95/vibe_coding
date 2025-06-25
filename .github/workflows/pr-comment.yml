@@ -1,0 +1,52 @@
+name: PR Auto Comment
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Add PR Comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          const pr = await github.rest.pulls.get({
+            owner,
+            repo,
+            pull_number: number,
+          });
+          
+          const comment = `## 🚀 PR 자동 분석 결과
+
+          **PR 정보:**
+          - **제목:** ${pr.data.title}
+          - **작성자:** @${pr.data.user.login}
+          - **브랜치:** \`${pr.data.head.ref}\` → \`${pr.data.base.ref}\`
+          - **변경된 파일 수:** ${pr.data.changed_files}개
+          - **추가된 라인:** +${pr.data.additions}
+          - **삭제된 라인:** -${pr.data.deletions}
+
+          **체크리스트:**
+          - [ ] 코드 리뷰 완료
+          - [ ] 테스트 통과 확인
+          - [ ] 문서 업데이트 (필요시)
+          - [ ] Breaking changes 확인
+
+          **참고사항:**
+          - 이 PR은 자동으로 분석되었습니다.
+          - 리뷰어는 코드 품질과 테스트 커버리지를 확인해주세요.
+          - 병합 전 모든 CI 체크가 통과되었는지 확인해주세요.
+
+          ---
+          *자동 생성된 코멘트입니다. 🤖*`;
+
+          await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: number,
+            body: comment
+          }); 

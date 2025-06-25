@@ -1,0 +1,102 @@
+name: PR Auto Labeler
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Auto Label PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          const pr = await github.rest.pulls.get({
+            owner,
+            repo,
+            pull_number: number,
+          });
+          
+          // 파일 변경 사항 가져오기
+          const files = await github.rest.pulls.listFiles({
+            owner,
+            repo,
+            pull_number: number,
+          });
+          
+          const labels = [];
+          const changedFiles = files.data.map(f => f.filename);
+          
+          // 크기 기반 라벨
+          const additions = pr.data.additions;
+          const deletions = pr.data.deletions;
+          const totalChanges = additions + deletions;
+          
+          if (totalChanges < 10) {
+            labels.push('size/XS');
+          } else if (totalChanges < 30) {
+            labels.push('size/S');
+          } else if (totalChanges < 100) {
+            labels.push('size/M');
+          } else if (totalChanges < 500) {
+            labels.push('size/L');
+          } else {
+            labels.push('size/XL');
+          }
+          
+          // 파일 경로 기반 라벨
+          const hasBackendChanges = changedFiles.some(f => f.startsWith('backend/'));
+          const hasFrontendChanges = changedFiles.some(f => f.startsWith('frontend/'));
+          const hasTestChanges = changedFiles.some(f => f.includes('test'));
+          const hasDocChanges = changedFiles.some(f => f.startsWith('docs/') || f.endsWith('.md'));
+          const hasConfigChanges = changedFiles.some(f => 
+            f.includes('requirements.txt') || 
+            f.includes('.yml') || 
+            f.includes('.yaml') || 
+            f.includes('config')
+          );
+          
+          if (hasBackendChanges) labels.push('backend');
+          if (hasFrontendChanges) labels.push('frontend');
+          if (hasTestChanges) labels.push('tests');
+          if (hasDocChanges) labels.push('documentation');
+          if (hasConfigChanges) labels.push('configuration');
+          
+          // PR 제목 기반 라벨
+          const title = pr.data.title.toLowerCase();
+          if (title.includes('fix') || title.includes('bug')) {
+            labels.push('bug');
+          } else if (title.includes('feat') || title.includes('feature')) {
+            labels.push('enhancement');
+          } else if (title.includes('refactor')) {
+            labels.push('refactoring');
+          } else if (title.includes('doc')) {
+            labels.push('documentation');
+          }
+          
+          // 브랜치 이름 기반 라벨
+          const branchName = pr.data.head.ref.toLowerCase();
+          if (branchName.includes('hotfix')) {
+            labels.push('hotfix');
+          } else if (branchName.includes('feature')) {
+            labels.push('enhancement');
+          } else if (branchName.includes('bugfix')) {
+            labels.push('bug');
+          }
+          
+          // 라벨 적용
+          if (labels.length > 0) {
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: number,
+              labels: [...new Set(labels)] // 중복 제거
+            });
+            
+            console.log(`라벨 추가 완료: ${labels.join(', ')}`);
+          } 

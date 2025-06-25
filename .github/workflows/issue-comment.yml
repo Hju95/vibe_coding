@@ -1,0 +1,58 @@
+name: Issue Auto Comment
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Add Issue Welcome Comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          const issue = await github.rest.issues.get({
+            owner,
+            repo,
+            issue_number: number,
+          });
+          
+          const comment = `## 🎯 이슈 등록 감사합니다!
+
+          **이슈 정보:**
+          - **제목:** ${issue.data.title}
+          - **작성자:** @${issue.data.user.login}
+          - **등록일:** ${new Date(issue.data.created_at).toLocaleDateString('ko-KR')}
+
+          **자동 분석 결과:**
+          ${issue.data.body && issue.data.body.includes('bug') ? '🐛 **버그 리포트로 분류되었습니다.**' : ''}
+          ${issue.data.body && issue.data.body.includes('feature') ? '✨ **기능 요청으로 분류되었습니다.**' : ''}
+          ${issue.data.body && issue.data.body.includes('question') ? '❓ **질문으로 분류되었습니다.**' : ''}
+
+          **다음 단계:**
+          - [ ] 담당자 할당
+          - [ ] 적절한 라벨 확인/추가
+          - [ ] 우선순위 설정
+          - [ ] 예상 소요 시간 검토
+
+          **참고사항:**
+          - 이슈 해결을 위해 추가 정보가 필요한 경우 코멘트로 요청드리겠습니다.
+          - 버그의 경우 재현 방법과 환경 정보를 포함해주시면 도움이 됩니다.
+          - 기능 요청의 경우 사용 사례와 기대 효과를 설명해주시면 좋습니다.
+
+          **관련 문서:**
+          - [기여 가이드라인](docs/)
+          - [이슈 템플릿](docs/)
+
+          ---
+          *자동 생성된 코멘트입니다. 🤖*`;
+
+          await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: number,
+            body: comment
+          }); 

@@ -1,0 +1,129 @@
+name: PR Auto Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Auto Code Review
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          
+          // 파일 변경 사항 가져오기
+          const files = await github.rest.pulls.listFiles({
+            owner,
+            repo,
+            pull_number: number,
+          });
+          
+          const reviews = [];
+          
+          for (const file of files.data) {
+            const filename = file.filename;
+            const patch = file.patch || '';
+            
+            // Python 파일 체크
+            if (filename.endsWith('.py')) {
+              const pythonIssues = [];
+              
+              // 기본적인 코드 품질 체크
+              if (patch.includes('print(') && !filename.includes('test_')) {
+                pythonIssues.push('🚨 print문이 발견되었습니다. logging을 사용하는 것을 권장합니다.');
+              }
+              
+              if (patch.includes('TODO') || patch.includes('FIXME')) {
+                pythonIssues.push('📝 TODO/FIXME 코멘트가 있습니다. 이슈로 등록하는 것을 고려해보세요.');
+              }
+              
+              if (patch.includes('import *')) {
+                pythonIssues.push('⚠️ wildcard import가 발견되었습니다. 명시적 import를 권장합니다.');
+              }
+              
+              // 긴 함수 체크
+              const functionMatches = patch.match(/def\s+\w+/g);
+              if (functionMatches && functionMatches.length > 0) {
+                const lines = patch.split('\n');
+                const addedLines = lines.filter(line => line.startsWith('+')).length;
+                if (addedLines > 50) {
+                  pythonIssues.push('📏 함수가 너무 길어 보입니다. 작은 함수로 분리하는 것을 고려해보세요.');
+                }
+              }
+              
+              if (pythonIssues.length > 0) {
+                reviews.push({
+                  path: filename,
+                  body: `**Python 코드 리뷰 결과:**\n\n${pythonIssues.map(issue => `- ${issue}`).join('\n')}\n\n*자동 생성된 리뷰입니다. 🤖*`
+                });
+              }
+            }
+            
+            // 테스트 파일 체크
+            if (filename.includes('test_') || filename.includes('tests/')) {
+              const testIssues = [];
+              
+              if (!patch.includes('assert') && !patch.includes('self.assert')) {
+                testIssues.push('🧪 테스트 assertion이 없는 것 같습니다. 적절한 검증을 추가해주세요.');
+              }
+              
+              if (testIssues.length > 0) {
+                reviews.push({
+                  path: filename,
+                  body: `**테스트 코드 리뷰 결과:**\n\n${testIssues.map(issue => `- ${issue}`).join('\n')}\n\n*자동 생성된 리뷰입니다. 🤖*`
+                });
+              }
+            }
+          }
+          
+          // 전체 PR에 대한 일반적인 코멘트
+          const generalComment = `## 🔍 자동 코드 리뷰 결과
+
+          **분석 완료:**
+          - 총 ${files.data.length}개 파일 변경
+          - ${files.data.filter(f => f.filename.endsWith('.py')).length}개 Python 파일
+          - ${files.data.filter(f => f.filename.includes('test')).length}개 테스트 파일
+
+          **권장사항:**
+          - [ ] 모든 새로운 기능에 대한 테스트 추가 확인
+          - [ ] 코드 스타일 가이드 준수 확인
+          - [ ] 에러 핸들링 적절성 확인
+          - [ ] 문서화 필요성 검토
+
+          ${reviews.length > 0 ? '구체적인 코드 리뷰 코멘트가 개별 파일에 추가되었습니다.' : '자동 검토에서 특별한 이슈가 발견되지 않았습니다. ✅'}
+
+          ---
+          *자동 생성된 코드 리뷰입니다. 🤖*`;
+
+          // 일반 코멘트 추가
+          await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: number,
+            body: generalComment
+          });
+          
+          // 개별 파일 리뷰 코멘트 추가
+          for (const review of reviews) {
+            try {
+              await github.rest.pulls.createReviewComment({
+                owner,
+                repo,
+                pull_number: number,
+                body: review.body,
+                path: review.path,
+                line: 1,
+                side: 'RIGHT'
+              });
+            } catch (error) {
+              console.log(`파일 ${review.path}에 리뷰 코멘트 추가 실패:`, error.message);
+            }
+          } 

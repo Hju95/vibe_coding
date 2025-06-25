@@ -1,0 +1,137 @@
+name: Issue Auto Labeler
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Auto Label Issue
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo, number } = context.issue;
+          const issue = await github.rest.issues.get({
+            owner,
+            repo,
+            issue_number: number,
+          });
+          
+          const title = issue.data.title.toLowerCase();
+          const body = (issue.data.body || '').toLowerCase();
+          const labels = [];
+          
+          // 이슈 타입 분류
+          if (title.includes('bug') || body.includes('bug') || 
+              title.includes('error') || body.includes('error') ||
+              title.includes('fix') || body.includes('broken')) {
+            labels.push('bug');
+          }
+          
+          if (title.includes('feature') || body.includes('feature') ||
+              title.includes('enhancement') || body.includes('improvement') ||
+              title.includes('add') || title.includes('new')) {
+            labels.push('enhancement');
+          }
+          
+          if (title.includes('question') || body.includes('question') ||
+              title.includes('help') || body.includes('how to') ||
+              title.includes('?')) {
+            labels.push('question');
+          }
+          
+          if (title.includes('doc') || body.includes('documentation') ||
+              title.includes('readme') || body.includes('guide')) {
+            labels.push('documentation');
+          }
+          
+          // 기술 영역 분류
+          if (title.includes('backend') || body.includes('backend') ||
+              title.includes('api') || body.includes('fastapi') ||
+              title.includes('server')) {
+            labels.push('backend');
+          }
+          
+          if (title.includes('frontend') || body.includes('frontend') ||
+              title.includes('streamlit') || body.includes('ui') ||
+              title.includes('interface')) {
+            labels.push('frontend');
+          }
+          
+          if (title.includes('test') || body.includes('test') ||
+              title.includes('testing') || body.includes('pytest')) {
+            labels.push('testing');
+          }
+          
+          if (title.includes('config') || body.includes('configuration') ||
+              title.includes('setup') || body.includes('deployment')) {
+            labels.push('configuration');
+          }
+          
+          if (title.includes('performance') || body.includes('performance') ||
+              title.includes('slow') || body.includes('optimization')) {
+            labels.push('performance');
+          }
+          
+          if (title.includes('security') || body.includes('security') ||
+              title.includes('vulnerability') || body.includes('auth')) {
+            labels.push('security');
+          }
+          
+          // 우선순위 분류
+          if (title.includes('urgent') || body.includes('urgent') ||
+              title.includes('critical') || body.includes('asap') ||
+              title.includes('production') || title.includes('broken')) {
+            labels.push('priority: high');
+          } else if (title.includes('minor') || body.includes('minor') ||
+                     title.includes('nice to have') || body.includes('low priority')) {
+            labels.push('priority: low');
+          } else {
+            labels.push('priority: medium');
+          }
+          
+          // 난이도 추정
+          if (title.includes('simple') || body.includes('simple') ||
+              title.includes('easy') || body.includes('quick')) {
+            labels.push('difficulty: easy');
+          } else if (title.includes('complex') || body.includes('complex') ||
+                     title.includes('difficult') || body.includes('challenging')) {
+            labels.push('difficulty: hard');
+          } else {
+            labels.push('difficulty: medium');
+          }
+          
+          // 작업 크기 추정
+          const bodyLength = body.length;
+          const complexity = title.split(' ').length + Math.floor(bodyLength / 100);
+          
+          if (complexity < 10) {
+            labels.push('size: small');
+          } else if (complexity < 30) {
+            labels.push('size: medium');
+          } else {
+            labels.push('size: large');
+          }
+          
+          // 라벨 적용
+          if (labels.length > 0) {
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: number,
+              labels: [...new Set(labels)] // 중복 제거
+            });
+            
+            console.log(`이슈 #${number}에 라벨 추가 완료: ${labels.join(', ')}`);
+            
+            // 라벨링 결과 코멘트
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: number,
+              body: `🏷️ **자동 라벨링 완료**\n\n추가된 라벨: ${labels.map(l => `\`${l}\``).join(', ')}\n\n라벨이 정확하지 않다면 수동으로 수정해주세요.\n\n---\n*자동 라벨링 시스템 🤖*`
+            });
+          } 
