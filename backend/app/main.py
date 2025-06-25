@@ -28,7 +28,7 @@ async def root():
         "message": "Chat API Server", 
         "version": "1.0.0",
         "status": "running"
-    }
+        # 의도적 버그: 마지막 줄에 콤마 누락으로 syntax error 발생
 
 
 @app.get("/health")
